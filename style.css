@@ -95,7 +95,10 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    visibility: hidden;
+}
+
+.popUp-hide{
+    display: none;
 }
 
 .popUp__refresh-btn{

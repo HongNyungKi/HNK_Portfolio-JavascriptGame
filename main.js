@@ -10,6 +10,8 @@ const heroCount = 3;
 const gameTimer = document.querySelector('.header__timer');
 const gameScore = document.querySelector('.header__score');
 const gameDuration = 5;
+const popUp = document.querySelector('.popUp');
+const popUpMessage = document.querySelector('.popUp__message');
 
 
 
@@ -32,7 +34,7 @@ function startGame(){
     showStopBtn();
     showTimeAndScore();
     startGameTimer();
-    // started = true;
+    started = true;
 }
 
     // 게임 시작시 실행되는 함수1 settingGame : 이미지 요소 배치하기 / 스코어나타내기 / 
@@ -100,3 +102,26 @@ function updateTimerText(time){
     gameTimer.innerText = `${minutes}:${seconds}`;
 }
 
+// 게임 정지시 실행되는 함수들
+function stopGame(){
+    stopGameTimer();
+    hideGameBtn();
+    showPopUpWithText();
+    started = false;
+}
+
+    //게임 정지시 실행되는 함수1 stopGameTimer : 타이머 멈추기
+function stopGameTimer(){
+    clearInterval(timer);
+}
+
+    //게임 정지시 실행되는 함수2 hideGameBtn : 게임 버튼을 안보이게 하기
+function hideGameBtn(){
+    gameBtn.style.visibility = 'hidden';
+}
+
+    //게임 정지시 실행되는 함수3 showPopUpWithText : 텍스트를 삽입한 팝업창을 나타나게 하기
+function showPopUpWithText(text){
+    popUp.classList.remove('popUp-hide');
+    popUpMessage.innerText = text;
+}
