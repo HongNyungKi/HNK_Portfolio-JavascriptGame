@@ -1,4 +1,5 @@
 'use strict';
+import PopUp from './PopUp.js';
 
 const gameBtn = document.querySelector('.header__btn');
 const field = document.querySelector('.game__field');
@@ -10,9 +11,7 @@ const heroCount = 3;
 const gameTimer = document.querySelector('.header__timer');
 const gameScore = document.querySelector('.header__score');
 const gameDuration = 5;
-const popUp = document.querySelector('.popUp');
-const popUpMessage = document.querySelector('.popUp__message');
-const popUpRefresh = document.querySelector('.popUp__refresh-btn');
+
 
 
 
@@ -20,6 +19,13 @@ let started = false;
 let timer = undefined;
 let score = 0;
 
+
+const gameFinishBanner = new PopUp();
+gameFinishBanner.setClickListener(()=>{
+    startGame();
+        hidePopUp();
+        showGameBtn();
+})
 //게임이 시작되었다면, 중지
 //게임이 시작되지 않았다면, 시작 
 gameBtn.addEventListener('click',()=>{
@@ -126,22 +132,17 @@ function hideGameBtn(){
 }
 
     //게임 정지시 실행되는 함수3 showPopUpWithText : 텍스트를 삽입한 팝업창을 나타나게 하기
-function showPopUpWithText(text){
-    popUp.classList.remove('popUp-hide');
-    popUpMessage.innerText = text;
-}
+    // => 모듈화
 
 //리플레시 버튼 클릭시 실행되는 함수들
-popUpRefresh.addEventListener('click',()=>{
-    startGame();
-    hidePopUp();
-    showGameBtn();
-})
+// popUpRefresh.addEventListener('click',()=>{
+//     startGame();
+//     hidePopUp();
+//     showGameBtn();
+// })
 
     //리플레시 버튼 클릭시 실행되는 함수1 hidePopUp : 팝업창을 사라지게 하기
-function hidePopUp(){
-    popUp.classList.add('popUp-hide');
-}
+    //=>모듈화
 
     //리플레시 버튼 클릭 시 실행되는 함수2 showGameBtn : 게임 버튼을 보이게 하기
 function showGameBtn(){

@@ -83,6 +83,13 @@ body{
     position: relative;
 }
 
+.game__field>img{
+    transition: all 100ms ease-in;
+}
+.game__field>img:hover{
+    transform: scale(1.1);
+}
+
 .popUp{
     background: #00000090;
     transform: translateY(-150%);
