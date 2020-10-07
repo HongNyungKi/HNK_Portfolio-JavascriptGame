@@ -12,11 +12,13 @@ const gameScore = document.querySelector('.header__score');
 const gameDuration = 5;
 const popUp = document.querySelector('.popUp');
 const popUpMessage = document.querySelector('.popUp__message');
+const popUpRefresh = document.querySelector('.popUp__refresh-btn');
 
 
 
 let started = false;
 let timer = undefined;
+let score = 0;
 
 //게임이 시작되었다면, 중지
 //게임이 시작되지 않았다면, 시작 
@@ -39,12 +41,12 @@ function startGame(){
 
     // 게임 시작시 실행되는 함수1 settingGame : 이미지 요소 배치하기 / 스코어나타내기 / 
 function settingGame(){
-    // score = 0;
+    score = 0;
     field.innerHTML = '';
     addItem('IronMan',IronManCount,'./img/IronMan.png');
-    addItem('Captain',heroCount,'./img/Captain.png');
-    addItem('Hulk',heroCount,'./img/Hulk.png');
-    addItem('SpiderMan',heroCount,'./img/SpiderMan.png');
+    addItem('hero',heroCount,'./img/Captain.png');
+    addItem('hero',heroCount,'./img/Hulk.png');
+    addItem('hero',heroCount,'./img/SpiderMan.png');
     gameScore.innerText = IronManCount;
 }
 function addItem(className,count,imgPath){
@@ -81,7 +83,7 @@ function showTimeAndScore(){
     gameTimer.style.visibility = 'visible';
 }
 
-    //게임 시작시 실행되는 함수4 startGameTimer : 타이머 실행하기 
+    //게임 시작시 실행되는 함수4 startGameTimer : 타이머 실행하기 + 팝업창 보여지기  + 게임 버튼 숨기기
 function startGameTimer(){
     let remainingTime = gameDuration;
     updateTimerText(remainingTime);
@@ -89,6 +91,8 @@ function startGameTimer(){
         ()=>{
             if(remainingTime <= 0){
                 clearInterval(timer);
+                showPopUpWithText('YOU LOSE...');
+                hideGameBtn();
                 return ;
             }
             updateTimerText(--remainingTime)
@@ -106,13 +110,14 @@ function updateTimerText(time){
 function stopGame(){
     stopGameTimer();
     hideGameBtn();
-    showPopUpWithText();
+    showPopUpWithText('REPLAY?');
     started = false;
 }
 
     //게임 정지시 실행되는 함수1 stopGameTimer : 타이머 멈추기
 function stopGameTimer(){
     clearInterval(timer);
+    // showPopUpWithText()
 }
 
     //게임 정지시 실행되는 함수2 hideGameBtn : 게임 버튼을 안보이게 하기
@@ -124,4 +129,55 @@ function hideGameBtn(){
 function showPopUpWithText(text){
     popUp.classList.remove('popUp-hide');
     popUpMessage.innerText = text;
+}
+
+//리플레시 버튼 클릭시 실행되는 함수들
+popUpRefresh.addEventListener('click',()=>{
+    startGame();
+    hidePopUp();
+    showGameBtn();
+})
+
+    //리플레시 버튼 클릭시 실행되는 함수1 hidePopUp : 팝업창을 사라지게 하기
+function hidePopUp(){
+    popUp.classList.add('popUp-hide');
+}
+
+    //리플레시 버튼 클릭 시 실행되는 함수2 showGameBtn : 게임 버튼을 보이게 하기
+function showGameBtn(){
+    gameBtn.style.visibility = 'visible';
+}
+
+//이미지를 클릭시 실행되는 함수들
+field.addEventListener('click',onFieldClick)
+
+function onFieldClick(e){
+    if(!started){
+        return ;
+    }
+    const target = event.target;
+    if(target.matches('.IronMan')){
+        target.remove();
+        score++;
+        updateScore();
+        if(score === IronManCount){
+            finishGame(true);
+        }
+    } else if(target.matches('.hero')){
+        stopGameTimer();
+        finishGame(false);
+    }
+}
+
+    //이미지 클릭시 실행되는 함수1 updateScore : 아이언맨 클릭시 스코어가 줄어듭니다.
+function updateScore(){
+    gameScore.innerText = IronManCount - score
+}
+
+    //이미지 클릭시 실행되는 함수2 finishGame : 아이언맨 이외의 이미지 클릭시 게임 종료 세팅하기
+function finishGame(win){
+    started = false;
+    hideGameBtn();
+    showPopUpWithText(win? 'YOU WIN!' : 'YOU LOSE...');
+    stopGameTimer();
 }
