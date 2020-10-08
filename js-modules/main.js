@@ -1,5 +1,5 @@
 'use strict';
-import PopUp from './PopUp.js';
+
 
 const gameBtn = document.querySelector('.header__btn');
 const field = document.querySelector('.game__field');
@@ -11,21 +11,18 @@ const heroCount = 3;
 const gameTimer = document.querySelector('.header__timer');
 const gameScore = document.querySelector('.header__score');
 const gameDuration = 5;
-
-
-
+const popUp = document.querySelector('.popUp');
+const popUpMessage = document.querySelector('.popUp__message');
+const popUpRefresh = document.querySelector('.popUp__refresh-btn');
+const IronManSound = new Audio('./sound/IronMan_pull.mp3');
+const heroSound = new Audio('./sound/hero_pull.mp3');
+const gameWinSound = new Audio('./sound/game_win.mp3');
+const bg = new Audio('./sound/bg.mp3');
 
 let started = false;
 let timer = undefined;
 let score = 0;
 
-
-const gameFinishBanner = new PopUp();
-gameFinishBanner.setClickListener(()=>{
-    startGame();
-        hidePopUp();
-        showGameBtn();
-})
 //게임이 시작되었다면, 중지
 //게임이 시작되지 않았다면, 시작 
 gameBtn.addEventListener('click',()=>{
@@ -42,6 +39,7 @@ function startGame(){
     showStopBtn();
     showTimeAndScore();
     startGameTimer();
+    playSound(bg);
     started = true;
 }
 
@@ -99,6 +97,8 @@ function startGameTimer(){
                 clearInterval(timer);
                 showPopUpWithText('YOU LOSE...');
                 hideGameBtn();
+                playSound(heroSound);
+                stopSound(bg);
                 return ;
             }
             updateTimerText(--remainingTime)
@@ -111,19 +111,20 @@ function updateTimerText(time){
     const seconds = time % 60;
     gameTimer.innerText = `${minutes}:${seconds}`;
 }
+    //게임 시작시 실행되는 함수5 playSound : 소리 추가하기(나중에 삽입)
 
 // 게임 정지시 실행되는 함수들
 function stopGame(){
     stopGameTimer();
     hideGameBtn();
     showPopUpWithText('REPLAY?');
+    stopSound(bg);
     started = false;
 }
 
     //게임 정지시 실행되는 함수1 stopGameTimer : 타이머 멈추기
 function stopGameTimer(){
     clearInterval(timer);
-    // showPopUpWithText()
 }
 
     //게임 정지시 실행되는 함수2 hideGameBtn : 게임 버튼을 안보이게 하기
@@ -132,17 +133,22 @@ function hideGameBtn(){
 }
 
     //게임 정지시 실행되는 함수3 showPopUpWithText : 텍스트를 삽입한 팝업창을 나타나게 하기
-    // => 모듈화
+function showPopUpWithText(text){
+    popUp.classList.remove('popUp-hide');
+    popUpMessage.innerText = text;
+}
 
 //리플레시 버튼 클릭시 실행되는 함수들
-// popUpRefresh.addEventListener('click',()=>{
-//     startGame();
-//     hidePopUp();
-//     showGameBtn();
-// })
+popUpRefresh.addEventListener('click',()=>{
+    startGame();
+    hidePopUp();
+    showGameBtn();
+})
 
     //리플레시 버튼 클릭시 실행되는 함수1 hidePopUp : 팝업창을 사라지게 하기
-    //=>모듈화
+function hidePopUp(){
+    popUp.classList.add('popUp-hide')
+}
 
     //리플레시 버튼 클릭 시 실행되는 함수2 showGameBtn : 게임 버튼을 보이게 하기
 function showGameBtn(){
@@ -160,9 +166,11 @@ function onFieldClick(e){
     if(target.matches('.IronMan')){
         target.remove();
         score++;
+        playSound(IronManSound);
         updateScore();
         if(score === IronManCount){
             finishGame(true);
+            stopSound(bg);
         }
     } else if(target.matches('.hero')){
         stopGameTimer();
@@ -170,14 +178,29 @@ function onFieldClick(e){
     }
 }
 
-    //이미지 클릭시 실행되는 함수1 updateScore : 아이언맨 클릭시 스코어가 줄어듭니다.
+    //이미지 클릭시 실행되는 함수3 playSound : 이미지 클릭시 각각 다르게 소리가 나게 한다. 
+    function playSound(sound){
+        sound.currentTime = 0;
+        sound.play();
+    }
+    function stopSound(sound){
+        sound.pause();
+    }
+
+    //이미지 클릭시 실행되는 함수2 updateScore : 아이언맨 클릭시 스코어가 줄어듭니다.
 function updateScore(){
     gameScore.innerText = IronManCount - score
 }
 
-    //이미지 클릭시 실행되는 함수2 finishGame : 아이언맨 이외의 이미지 클릭시 게임 종료 세팅하기
+    //이미지 클릭시 실행되는 함수3 finishGame : 아이언맨 이외의 이미지 클릭시 게임 종료 세팅하기
 function finishGame(win){
     started = false;
+    if(win){
+       playSound(gameWinSound);
+    }else{
+        playSound(heroSound);
+        stopSound(bg);
+    }
     hideGameBtn();
     showPopUpWithText(win? 'YOU WIN!' : 'YOU LOSE...');
     stopGameTimer();
