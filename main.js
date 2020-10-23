@@ -1,5 +1,4 @@
 'use strict';
-import PopUp from './PopUp.js';
 
 const gameBtn = document.querySelector('.header__btn');
 const field = document.querySelector('.game__field');
@@ -16,16 +15,18 @@ const heroSound = new Audio('./sound/hero_pull.mp3');
 const gameWinSound = new Audio('./sound/game_win.mp3');
 const bg = new Audio('./sound/bg.mp3');
 const alert = new Audio('./sound/alert.wav');
+const popUp = document.querySelector('.popUp');
+const popUpMessage = document.querySelector('.popUp__message');
+const popUpRefresh = document.querySelector('.popUp__refresh-btn');
 
 let started = false;
 let timer = undefined;
 let score = 0;
 
-const gameFinishBanner = new PopUp();
-gameFinishBanner.setClickListener(()=>{
-    startGame();
-    showGameBtn();
-})
+// gameFinishBanner.setClickListener(()=>{
+//     startGame();
+//     showGameBtn();
+// })
 
 //게임이 시작되었다면, 중지
 //게임이 시작되지 않았다면, 시작 
@@ -99,7 +100,7 @@ function startGameTimer(){
         ()=>{
             if(remainingTime <= 0){
                 clearInterval(timer);
-                gameFinishBanner.showWithText('YOU LOSE...');
+                showPopUpWithText('YOU LOSE...');
                 hideGameBtn();
                 playSound(heroSound);
                 stopSound(bg);
@@ -121,7 +122,7 @@ function updateTimerText(time){
 function stopGame(){
     stopGameTimer();
     hideGameBtn();
-    gameFinishBanner.showWithText('REPLAY?');
+    showPopUpWithText('REPLAY?');
     stopSound(bg);
     playSound(alert);
     started = false;
@@ -138,13 +139,23 @@ function hideGameBtn(){
 }
 
     //게임 정지시 실행되는 함수3 showPopUpWithText : 텍스트를 삽입한 팝업창을 나타나게 하기
-    //모듈화
+function showPopUpWithText(text){
+    popUp.classList.remove('popUp-hide');
+    popUpMessage.innerText = text;
+    }
 
-    //리플레시 버튼 클릭시 실행되는 함수들
-    //모듈화
+//리플레시 버튼 클릭시 실행되는 함수들
+popUpRefresh.addEventListener('click',()=>{
+    startGame();
+    showGameBtn();
+    hidePopUp();
+})
+
 
     //리플레시 버튼 클릭시 실행되는 함수1 hidePopUp : 팝업창을 사라지게 하기
-    // 모듈화
+function hidePopUp(){
+        popUp.classList.add('popUp-hide');
+    }
 
     //리플레시 버튼 클릭 시 실행되는 함수2 showGameBtn : 게임 버튼을 보이게 하기
 function showGameBtn(){
@@ -175,13 +186,13 @@ function onFieldClick(e){
 }
 
     //이미지 클릭시 실행되는 함수3 playSound : 이미지 클릭시 각각 다르게 소리가 나게 한다. 
-    function playSound(sound){
-        sound.currentTime = 0;
-        sound.play();
-    }
-    function stopSound(sound){
-        sound.pause();
-    }
+function playSound(sound){
+    sound.currentTime = 0;
+    sound.play();
+}
+function stopSound(sound){
+    sound.pause();
+}
 
     //이미지 클릭시 실행되는 함수2 updateScore : 아이언맨 클릭시 스코어가 줄어듭니다.
 function updateScore(){
@@ -198,6 +209,6 @@ function finishGame(win){
         stopSound(bg);
     }
     hideGameBtn();
-    gameFinishBanner.showWithText(win? 'YOU WIN!' : 'YOU LOSE...');
+    showPopUpWithText(win? 'YOU WIN!' : 'YOU LOSE...');
     stopGameTimer();
 }
